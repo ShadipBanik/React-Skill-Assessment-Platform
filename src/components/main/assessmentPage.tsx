@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Header from "./header/header";
 import ConfirmModal from "../shared/ConfirmModal";
-import { useNavigate } from "react-router-dom";
 import AssessmentRecorder from "./tabSections/videoQusetion";
 import QuantitativeTab from "./tabSections/quantitative";
 import MarketingPlan from "./tabSections/marketingPlan";
@@ -17,12 +18,11 @@ export default function AssessmentPage() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Record<string, any>>({});
-  const [tempStepData, setTempStepData] = useState<Record<string, any> | null>(
-    null
-  );
+  const [tempStepData, setTempStepData] = useState<Record<string, any> | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [showCountdownModal, setShowCountdownModal] = useState(false);
+
   const TOTAL_STEPS = 4;
   const STEP_DURATIONS = [40, 30, 40, 40]; // seconds per step
 
@@ -35,6 +35,18 @@ export default function AssessmentPage() {
     userEmail = storedUser ?? null;
   }
 
+  const mainTimerRef = useRef<number | null>(null);
+  const countdownTimerRef = useRef<number | null>(null);
+  const submittedRef = useRef(false);
+
+  // NEW: ref to store videoFile to prevent losing it
+  const videoFileRef = useRef<File | null>(null);
+
+  // Update videoFile ref whenever it changes
+  useEffect(() => {
+    videoFileRef.current = videoFile;
+  }, [videoFile]);
+
   // Check if user already submitted
   useEffect(() => {
     if (localStorage.getItem(`assessmentDone:${userEmail}`) === "true") {
@@ -46,45 +58,41 @@ export default function AssessmentPage() {
   useEffect(() => {
     if (!currentStep) return;
 
-    // Always close modal when a new step starts
+    submittedRef.current = false;
     setShowCountdownModal(false);
 
     const duration = STEP_DURATIONS[currentStep - 1];
-    console.log(` Step ${currentStep} started — time limit: ${duration}s`);
+    console.log(`🔹 Step ${currentStep} started — time limit: ${duration}s`);
 
-    // Timer for main step duration
-    const mainTimer = setTimeout(() => {
-      console.log(
-        ` Step ${currentStep} time limit reached — showing countdown modal`
-      );
+    mainTimerRef.current = window.setTimeout(() => {
+      console.log(`⏳ Step ${currentStep} time limit reached — showing countdown modal`);
       setShowCountdownModal(true);
 
-      // Start the 20-second countdown timer
-      const countdownTimer = setTimeout(() => {
-        console.log(` Step ${currentStep} auto-submitted after countdown`);
+      countdownTimerRef.current = window.setTimeout(() => {
+        console.log(`✅ Step ${currentStep} auto-submitted after countdown`);
+
+        if (submittedRef.current) return;
+        submittedRef.current = true;
+
         setShowCountdownModal(false);
-
-        // if (currentStep === 4 && !videoFile) {
-        //   console.log(" Skipping auto-submit because video not uploaded");
-        //   return;
-        // }
-
         const stepData = getCurrentStepData();
         setTempStepData(stepData);
         handleConfirmYes(true);
-      }, 20 * 1000); // 20s countdown
+      }, 20 * 1000);
+    }, duration * 1000);
 
-      // Clear countdown when unmounted or next step starts
-      return () => clearTimeout(countdownTimer);
-    }, duration * 1000); // Wait full step duration first
-
-    // Clear both timers if step changes
-    return () => clearTimeout(mainTimer);
-  }, [currentStep, videoFile]);
+    return () => {
+      console.log(`🗑 Clearing timers for Step ${currentStep}`);
+      if (mainTimerRef.current) clearTimeout(mainTimerRef.current);
+      if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+    };
+  }, [currentStep]);
 
   const handleCountdownClose = () => {
-    setShowCountdownModal(false);
+    if (submittedRef.current) return;
+    submittedRef.current = true;
 
+    setShowCountdownModal(false);
     const stepData = getCurrentStepData();
     setTempStepData(stepData);
     handleConfirmYes(true);
@@ -99,7 +107,7 @@ export default function AssessmentPage() {
 
   const getCurrentStepData = (): Record<string, any> => {
     if (currentStep === 4) {
-      return videoFile ? { videoFile } : {};
+      return videoFileRef.current ? { videoFile: videoFileRef.current } : {};
     }
 
     if (!formRef.current) return {};
@@ -123,10 +131,8 @@ export default function AssessmentPage() {
   const handleConfirmYes = (auto = false) => {
     const stepData = tempStepData || getCurrentStepData();
 
-    // Close countdown if still visible
     setShowCountdownModal(false);
 
-    // Save data for current step
     setFormData((prev) => ({
       ...prev,
       [`step${currentStep}`]: stepData,
@@ -145,7 +151,6 @@ export default function AssessmentPage() {
         [`step${currentStep}`]: stepData,
         email: userEmail,
       };
-
       console.log("Submitting all steps data:", finalData);
       localStorage.setItem(`assessmentDone:${userEmail}`, "true");
       navigate("/assessment-success", { state: finalData });
@@ -154,14 +159,12 @@ export default function AssessmentPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      {/* Header */}
       <Header
         currentStep={currentStep}
         duration={STEP_DURATIONS[currentStep - 1]}
         key={currentStep}
       />
 
-      {/* Step forms */}
       <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
         <form
           ref={formRef}
@@ -173,12 +176,10 @@ export default function AssessmentPage() {
           {currentStep === 3 && <QuantitativeTab />}
           {currentStep === 4 && (
             <AssessmentRecorder
-            onVideoUpload={async (file) => {
-              setVideoFile(file);
-              // optionally do real upload here if you want
-              // await yourUploadFunction(file);
-            }}
-/>
+              onVideoUpload={async (file) => {
+                setVideoFile(file);
+              }}
+            />
           )}
 
           <div className="flex justify-center mt-6">
@@ -199,7 +200,6 @@ export default function AssessmentPage() {
         </form>
       </main>
 
-      {/* Tab-change modal */}
       <ConfirmModal
         isOpen={isModalOpen}
         onConfirm={() => setIsModalOpen(false)}
@@ -214,7 +214,6 @@ export default function AssessmentPage() {
         onClose={handleCountdownClose}
       />
 
-      {/* Step confirm modal */}
       <ConfirmModal
         isOpen={isSubmitModalOpen}
         title="Are you sure you want to submit?"

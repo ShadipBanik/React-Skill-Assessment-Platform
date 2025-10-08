@@ -4,8 +4,12 @@ interface AssessmentRecorderProps {
   onVideoUpload?: (file: File) => Promise<void>; // async so we can track progress
 }
 
-export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorderProps) {
-  const [step, setStep] = useState<"initial" | "ready" | "recording" | "uploading" | "review">("initial");
+export default function AssessmentRecorder({
+  onVideoUpload,
+}: AssessmentRecorderProps) {
+  const [step, setStep] = useState<
+    "initial" | "ready" | "recording" | "uploading" | "review"
+  >("initial");
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(120);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -19,7 +23,10 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.muted = true;
@@ -71,18 +78,26 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
       mediaRecorderRef.current.stop();
     }
     if (videoRef.current && videoRef.current.srcObject) {
-      (videoRef.current.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
+      (videoRef.current.srcObject as MediaStream)
+        .getTracks()
+        .forEach((t) => t.stop());
       videoRef.current.srcObject = null;
     }
     if (timerRef.current) clearInterval(timerRef.current);
     setTimeLeft(0);
   };
 
-  const simulateUpload = async (blob: Blob, uploadCallback?: (file: File) => Promise<void>) => {
+  const simulateUpload = async (
+    blob: Blob,
+    uploadCallback?: (file: File) => Promise<void>
+  ) => {
     const file = new File([blob], "recording.webm", { type: "video/webm" });
     const total = 100;
     for (let i = 1; i <= total; i++) {
@@ -108,7 +123,9 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
   };
 
   const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const m = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
     const s = (seconds % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
   };
@@ -121,14 +138,20 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
             1
           </div>
           <span>
-            Please explain to the camera (in no more than 2 minutes) what the appropriate steps are to plan and execute a successful digital marketing campaign.
+            Please explain to the camera (in no more than 2 minutes) what the
+            appropriate steps are to plan and execute a successful digital
+            marketing campaign.
           </span>
         </h1>
 
         <div className="w-full sm:pl-10 text-center sm:text-left">
-          <p className="text-sm text-blue-600 underline cursor-pointer mb-1 sm:mb-2">Please note</p>
+          <p className="text-sm text-blue-600 underline cursor-pointer mb-1 sm:mb-2">
+            Please note
+          </p>
           <p className="text-xs sm:text-sm text-gray-600 mb-4">
-            You can review your video before submitting the section and re-record it multiple times. Once you re-record, it replaces the previous video.
+            You can review your video before submitting the section and
+            re-record it multiple times. Once you re-record, it replaces the
+            previous video.
           </p>
         </div>
 
@@ -147,7 +170,10 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
             </button>
           )}
 
-          {(step === "ready" || step === "recording" || step === "review" || step === "uploading") && (
+          {(step === "ready" ||
+            step === "recording" ||
+            step === "review" ||
+            step === "uploading") && (
             <>
               <video
                 ref={videoRef}
@@ -174,7 +200,10 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
           {step === "uploading" && (
             <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white text-center">
               <div className="relative w-24 h-24">
-                <svg className="transform -rotate-90 w-24 h-24" viewBox="0 0 100 100">
+                <svg
+                  className="transform -rotate-90 w-24 h-24"
+                  viewBox="0 0 100 100"
+                >
                   <circle
                     cx="50"
                     cy="50"
@@ -191,7 +220,9 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
                     strokeWidth="10"
                     fill="none"
                     strokeDasharray={Math.PI * 2 * 45}
-                    strokeDashoffset={Math.PI * 2 * 45 * (1 - uploadProgress / 100)}
+                    strokeDashoffset={
+                      Math.PI * 2 * 45 * (1 - uploadProgress / 100)
+                    }
                     strokeLinecap="round"
                   />
                 </svg>
@@ -207,7 +238,9 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
           {step === "review" && (
             <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white text-center p-4 sm:p-6">
               <div className="text-2xl mb-2">✅</div>
-              <p className="text-sm sm:text-lg font-medium mb-4">Your video was uploaded successfully!</p>
+              <p className="text-sm sm:text-lg font-medium mb-4">
+                Your video was uploaded successfully!
+              </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
@@ -248,7 +281,8 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
                 }}
                 className="bg-black hover:bg-black px-4 py-2 rounded-md flex items-center space-x-2 text-sm sm:text-base"
               >
-                <i className="fas fa-circle mr-2 text-red-500" /> Start Recording
+                <i className="fas fa-circle mr-2 text-red-500" /> Start
+                Recording
               </button>
             )}
 
@@ -265,6 +299,9 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
               </button>
             )}
           </div>
+        )}
+        {step === "initial" && (
+          <div className="relative w-full max-w-[640px] h-[60px] sm:h-[64px] bg-[#1e1e1e] rounded-b-lg"></div>
         )}
       </div>
     </div>
