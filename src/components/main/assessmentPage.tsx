@@ -38,9 +38,11 @@ export default function AssessmentPage() {
   const mainTimerRef = useRef<number | null>(null);
   const countdownTimerRef = useRef<number | null>(null);
   const submittedRef = useRef(false);
+
+  // NEW: ref to store videoFile to prevent losing it
   const videoFileRef = useRef<File | null>(null);
 
-  // Keep video file in ref to avoid loss
+  // Update videoFile ref whenever it changes
   useEffect(() => {
     videoFileRef.current = videoFile;
   }, [videoFile]);
@@ -53,57 +55,47 @@ export default function AssessmentPage() {
   }, [navigate, userEmail]);
 
   // Auto step submit when timer runs out
-useEffect(() => {
-  if (!currentStep || currentStep > TOTAL_STEPS) return;
+  useEffect(() => {
+    if (!currentStep) return;
 
-  submittedRef.current = false;
-  setShowCountdownModal(false);
+    submittedRef.current = false;
+    setShowCountdownModal(false);
 
-  const duration = STEP_DURATIONS[currentStep - 1];
-  console.log(`🔹 Step ${currentStep} started — time limit: ${duration}s`);
+    const duration = STEP_DURATIONS[currentStep - 1];
+    console.log(`🔹 Step ${currentStep} started — time limit: ${duration}s`);
 
-  const stepStartTime = performance.now();
-
-  const checkTimer = () => {
-    const elapsed = (performance.now() - stepStartTime) / 1000;
-    if (elapsed >= duration && !submittedRef.current) {
+    mainTimerRef.current = window.setTimeout(() => {
       console.log(`⏳ Step ${currentStep} time limit reached — showing countdown modal`);
       setShowCountdownModal(true);
 
       countdownTimerRef.current = window.setTimeout(() => {
         console.log(`✅ Step ${currentStep} auto-submitted after countdown`);
-        if (!submittedRef.current) {
-          submittedRef.current = true;
-          setShowCountdownModal(false);
-          const stepData = getCurrentStepData();
-          handleConfirmYes(true, stepData);
-        }
+
+        if (submittedRef.current) return;
+        submittedRef.current = true;
+
+        setShowCountdownModal(false);
+        const stepData = getCurrentStepData();
+        setTempStepData(stepData);
+        handleConfirmYes(true);
       }, 20 * 1000);
+    }, duration * 1000);
 
-      return; // stop interval
-    }
-    mainTimerRef.current = window.setTimeout(checkTimer, 500);
-  };
-
-  mainTimerRef.current = window.setTimeout(checkTimer, 500);
-
-  return () => {
-    console.log(`🗑 Clearing timers for Step ${currentStep}`);
-    if (mainTimerRef.current) clearTimeout(mainTimerRef.current);
-    if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
-    setShowCountdownModal(false);
-  };
-}, [currentStep]);
-
+    return () => {
+      console.log(`🗑 Clearing timers for Step ${currentStep}`);
+      if (mainTimerRef.current) clearTimeout(mainTimerRef.current);
+      if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+    };
+  }, [currentStep]);
 
   const handleCountdownClose = () => {
     if (submittedRef.current) return;
     submittedRef.current = true;
 
     setShowCountdownModal(false);
-
     const stepData = getCurrentStepData();
-    handleConfirmYes(true, stepData);
+    setTempStepData(stepData);
+    handleConfirmYes(true);
   };
 
   const tabChange = () => {
@@ -136,15 +128,14 @@ useEffect(() => {
     setIsSubmitModalOpen(true);
   };
 
-  const handleConfirmYes = (auto = false, stepData?: Record<string, any>) => {
-    if (submittedRef.current && !auto) return;
-    submittedRef.current = true;
+  const handleConfirmYes = (auto = false) => {
+    const stepData = tempStepData || getCurrentStepData();
 
-    const dataToSubmit = stepData || tempStepData || getCurrentStepData();
+    setShowCountdownModal(false);
 
     setFormData((prev) => ({
       ...prev,
-      [`step${currentStep}`]: dataToSubmit,
+      [`step${currentStep}`]: stepData,
     }));
 
     setTempStepData(null);
@@ -155,19 +146,15 @@ useEffect(() => {
       setCurrentStep((prev) => prev + 1);
       tabChange();
     } else {
-      submitFinal();
+      const finalData = {
+        ...formData,
+        [`step${currentStep}`]: stepData,
+        email: userEmail,
+      };
+      console.log("Submitting all steps data:", finalData);
+      localStorage.setItem(`assessmentDone:${userEmail}`, "true");
+      navigate("/assessment-success", { state: finalData });
     }
-  };
-
-  const submitFinal = () => {
-    const finalData = {
-      ...formData,
-      [`step${currentStep}`]: getCurrentStepData(),
-      email: userEmail,
-    };
-    console.log("Submitting all steps data:", finalData);
-    localStorage.setItem(`assessmentDone:${userEmail}`, "true");
-    navigate("/assessment-success", { state: finalData });
   };
 
   return (
@@ -203,7 +190,7 @@ useEffect(() => {
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : currentStep < TOTAL_STEPS ? (
+              ) : currentStep < 4 ? (
                 "SUBMIT SECTION"
               ) : (
                 "FINAL SUBMIT"
@@ -231,7 +218,7 @@ useEffect(() => {
         isOpen={isSubmitModalOpen}
         title="Are you sure you want to submit?"
         message={
-          currentStep < TOTAL_STEPS
+          currentStep < 4
             ? "Once you submit this section, you cannot edit your answers."
             : "This is your final submission. You cannot edit afterwards."
         }
