@@ -53,38 +53,48 @@ export default function AssessmentPage() {
   }, [navigate, userEmail]);
 
   // Auto step submit when timer runs out
-  useEffect(() => {
-    if (!currentStep || currentStep > TOTAL_STEPS) return;
+useEffect(() => {
+  if (!currentStep || currentStep > TOTAL_STEPS) return;
 
-    submittedRef.current = false;
-    setShowCountdownModal(false);
+  submittedRef.current = false;
+  setShowCountdownModal(false);
 
-    const duration = STEP_DURATIONS[currentStep - 1];
-    console.log(`🔹 Step ${currentStep} started — time limit: ${duration}s`);
+  const duration = STEP_DURATIONS[currentStep - 1];
+  console.log(`🔹 Step ${currentStep} started — time limit: ${duration}s`);
 
-    mainTimerRef.current = window.setTimeout(() => {
+  const stepStartTime = performance.now();
+
+  const checkTimer = () => {
+    const elapsed = (performance.now() - stepStartTime) / 1000;
+    if (elapsed >= duration && !submittedRef.current) {
       console.log(`⏳ Step ${currentStep} time limit reached — showing countdown modal`);
       setShowCountdownModal(true);
 
       countdownTimerRef.current = window.setTimeout(() => {
         console.log(`✅ Step ${currentStep} auto-submitted after countdown`);
-
-        if (submittedRef.current) return;
-        submittedRef.current = true;
-
-        setShowCountdownModal(false);
-        const stepData = getCurrentStepData();
-        handleConfirmYes(true, stepData);
+        if (!submittedRef.current) {
+          submittedRef.current = true;
+          setShowCountdownModal(false);
+          const stepData = getCurrentStepData();
+          handleConfirmYes(true, stepData);
+        }
       }, 20 * 1000);
-    }, duration * 1000);
 
-    return () => {
-      console.log(`🗑 Clearing timers for Step ${currentStep}`);
-      if (mainTimerRef.current) clearTimeout(mainTimerRef.current);
-      if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
-      setShowCountdownModal(false);
-    };
-  }, [currentStep]);
+      return; // stop interval
+    }
+    mainTimerRef.current = window.setTimeout(checkTimer, 500);
+  };
+
+  mainTimerRef.current = window.setTimeout(checkTimer, 500);
+
+  return () => {
+    console.log(`🗑 Clearing timers for Step ${currentStep}`);
+    if (mainTimerRef.current) clearTimeout(mainTimerRef.current);
+    if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+    setShowCountdownModal(false);
+  };
+}, [currentStep]);
+
 
   const handleCountdownClose = () => {
     if (submittedRef.current) return;
