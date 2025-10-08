@@ -35,26 +35,20 @@ export default function AssessmentPage() {
     userEmail = storedUser ?? null;
   }
 
-  const mainTimerRef = useRef<number | null>(null);
-  const countdownTimerRef = useRef<number | null>(null);
   const submittedRef = useRef(false);
-
-  // NEW: ref to store videoFile to prevent losing it
   const videoFileRef = useRef<File | null>(null);
 
-  // Update videoFile ref whenever it changes
   useEffect(() => {
     videoFileRef.current = videoFile;
   }, [videoFile]);
 
-  // Check if user already submitted
   useEffect(() => {
     if (localStorage.getItem(`assessmentDone:${userEmail}`) === "true") {
       navigate("/assessment-success");
     }
   }, [navigate, userEmail]);
 
-  // Auto step submit when timer runs out
+  // NEW: time-based step timer
   useEffect(() => {
     if (!currentStep) return;
 
@@ -64,27 +58,40 @@ export default function AssessmentPage() {
     const duration = STEP_DURATIONS[currentStep - 1];
     console.log(`🔹 Step ${currentStep} started — time limit: ${duration}s`);
 
-    mainTimerRef.current = window.setTimeout(() => {
-      console.log(`⏳ Step ${currentStep} time limit reached — showing countdown modal`);
-      setShowCountdownModal(true);
+    const stepEndTime = Date.now() + duration * 1000;
 
-      countdownTimerRef.current = window.setTimeout(() => {
-        console.log(`✅ Step ${currentStep} auto-submitted after countdown`);
+    const stepInterval = setInterval(() => {
+      const now = Date.now();
+      const remaining = stepEndTime - now;
 
-        if (submittedRef.current) return;
-        submittedRef.current = true;
+      if (remaining <= 0) {
+        console.log(`⏳ Step ${currentStep} time limit reached — showing countdown modal`);
+        setShowCountdownModal(true);
+        clearInterval(stepInterval);
 
-        setShowCountdownModal(false);
-        const stepData = getCurrentStepData();
-        setTempStepData(stepData);
-        handleConfirmYes(true);
-      }, 20 * 1000);
-    }, duration * 1000);
+        const countdownEndTime = Date.now() + 20 * 1000;
+
+        const countdownInterval = setInterval(() => {
+          if (Date.now() >= countdownEndTime) {
+            console.log(`✅ Step ${currentStep} auto-submitted after countdown`);
+
+            if (submittedRef.current) return;
+            submittedRef.current = true;
+
+            setShowCountdownModal(false);
+            const stepData = getCurrentStepData();
+            setTempStepData(stepData);
+            handleConfirmYes(true);
+
+            clearInterval(countdownInterval);
+          }
+        }, 100);
+      }
+    }, 100);
 
     return () => {
       console.log(`🗑 Clearing timers for Step ${currentStep}`);
-      if (mainTimerRef.current) clearTimeout(mainTimerRef.current);
-      if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+      clearInterval(stepInterval);
     };
   }, [currentStep]);
 
