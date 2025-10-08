@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* Optional: define custom classes for fonts */
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+.font-opensans { font-family: 'Open Sans', sans-serif; }
+.font-assistant { font-family: 'Assistant', sans-serif; }
+.font-code { font-family: 'Source Code Pro', monospace; }
+
+:root{
+  --ui-font: 'Montserrat', 'Assistant', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue","Font Awesome 5 Free" ,Arial, "Noto Sans", sans-serif;
+}
+
+
+
+/* Strong override: every element including pseudo-elements */
+html, body, *, *::before, *::after {
+  font-family: var(--ui-font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.assessmentForm input[type="checkbox"]::after {
+  content: "✓";
+  display: none;
+  color: white;
+  font-size: 12px;
+  position: absolute;
+  left: 4px;
+  top: 0px;
+}
+
+.assessmentForm input[type="checkbox"]:checked::after {
+  display: block;
+}
+
+.app-logo {
+    height: 26px;
+    color: #6c5ce7;
+    cursor: pointer;
+    z-index: 1;
+    inset-inline-start: 20px;
+    top: 20px;
+}
