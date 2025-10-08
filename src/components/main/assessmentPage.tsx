@@ -172,7 +172,13 @@ export default function AssessmentPage() {
           {currentStep === 2 && <MarketingPlan />}
           {currentStep === 3 && <QuantitativeTab />}
           {currentStep === 4 && (
-            <AssessmentRecorder onVideoUpload={(file) => setVideoFile(file)} />
+            <AssessmentRecorder
+            onVideoUpload={async (file) => {
+              setVideoFile(file);
+              // optionally do real upload here if you want
+              // await yourUploadFunction(file);
+            }}
+/>
           )}
 
           <div className="flex justify-center mt-6">

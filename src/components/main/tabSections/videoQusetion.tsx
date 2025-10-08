@@ -1,13 +1,14 @@
 import { useRef, useState } from "react";
 
 interface AssessmentRecorderProps {
-  onVideoUpload?: (file: File) => void;
+  onVideoUpload?: (file: File) => Promise<void>; // async so we can track progress
 }
 
 export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorderProps) {
-  const [step, setStep] = useState<"initial" | "ready" | "recording" | "review">("initial");
+  const [step, setStep] = useState<"initial" | "ready" | "recording" | "uploading" | "review">("initial");
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(120);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -32,14 +33,23 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
         if (evt.data && evt.data.size > 0) chunksRef.current.push(evt.data);
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "video/webm" });
         const url = URL.createObjectURL(blob);
         setVideoURL(url);
-        onVideoUpload?.(new File([blob], "recording.webm", { type: "video/webm" }));
         chunksRef.current = [];
+
+        // Start uploading
+        setStep("uploading");
+        setUploadProgress(0);
+
+        if (onVideoUpload) {
+          await simulateUpload(blob, onVideoUpload);
+        } else {
+          await simulateUpload(blob);
+        }
+
         setStep("review");
-        if (timerRef.current) clearInterval(timerRef.current);
       };
 
       mediaRecorder.start();
@@ -72,6 +82,18 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
     setTimeLeft(0);
   };
 
+  const simulateUpload = async (blob: Blob, uploadCallback?: (file: File) => Promise<void>) => {
+    const file = new File([blob], "recording.webm", { type: "video/webm" });
+    const total = 100;
+    for (let i = 1; i <= total; i++) {
+      await new Promise((res) => setTimeout(res, 20)); // simulate upload speed
+      setUploadProgress(i);
+    }
+    if (uploadCallback) {
+      await uploadCallback(file);
+    }
+  };
+
   const handleReview = () => {
     setStep("ready");
     if (videoRef.current) {
@@ -94,7 +116,6 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
   return (
     <div className="flex flex-col items-center justify-center w-full px-4 sm:px-6 md:px-8">
       <div className="flex flex-col items-center ">
-        {/* Heading */}
         <h1 className="text-sm sm:text-base font-medium text-gray-800 mb-3 leading-relaxed flex flex-col sm:flex-row sm:items-start sm:gap-3 md:text-center xs:text-left sm:text-left">
           <div className="flex mx-auto sm:mx-0 items-center justify-center w-7 h-7 rounded-full border-2 text-base font-normal bg-[#6c5ce7] text-white border-[#6c5ce7] shrink-0">
             1
@@ -104,7 +125,6 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
           </span>
         </h1>
 
-        {/* Notes */}
         <div className="w-full sm:pl-10 text-center sm:text-left">
           <p className="text-sm text-blue-600 underline cursor-pointer mb-1 sm:mb-2">Please note</p>
           <p className="text-xs sm:text-sm text-gray-600 mb-4">
@@ -112,9 +132,7 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
           </p>
         </div>
 
-        {/* Video container */}
         <div className="relative w-full max-w-[640px] h-[55vw] sm:h-[350px] bg-[#1e1e1e] rounded-t-lg overflow-hidden shadow-xl flex items-center justify-center">
-          {/* Initial screen */}
           {step === "initial" && (
             <button
               onClick={(e) => {
@@ -129,8 +147,7 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
             </button>
           )}
 
-          {/* Video playback */}
-          {(step === "ready" || step === "recording" || step === "review") && (
+          {(step === "ready" || step === "recording" || step === "review" || step === "uploading") && (
             <>
               <video
                 ref={videoRef}
@@ -153,19 +170,44 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
             </>
           )}
 
-          {/* Review overlay */}
+          {/* Upload Progress Circle */}
+          {step === "uploading" && (
+            <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white text-center">
+              <div className="relative w-24 h-24">
+                <svg className="transform -rotate-90 w-24 h-24" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="#555"
+                    strokeWidth="10"
+                    fill="none"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="#4ade80"
+                    strokeWidth="10"
+                    fill="none"
+                    strokeDasharray={Math.PI * 2 * 45}
+                    strokeDashoffset={Math.PI * 2 * 45 * (1 - uploadProgress / 100)}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center text-lg font-bold">
+                  {uploadProgress}%
+                </div>
+              </div>
+              <p className="mt-4 text-lg">Uploading...</p>
+            </div>
+          )}
+
+          {/* Review Overlay */}
           {step === "review" && (
-            <div
-              className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white text-center p-4 sm:p-6"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-              }}
-            >
+            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white text-center p-4 sm:p-6">
               <div className="text-2xl mb-2">✅</div>
-              <p className="text-sm sm:text-lg font-medium mb-4">
-                Your video was uploaded successfully!
-              </p>
+              <p className="text-sm sm:text-lg font-medium mb-4">Your video was uploaded successfully!</p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
@@ -196,13 +238,7 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
 
         {/* Bottom Toolbar */}
         {step !== "initial" && (
-          <div
-            className="relative w-full max-w-[640px] h-[60px] sm:h-[64px] bg-gray-800/90 rounded-b-lg text-white flex justify-center items-center"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
+          <div className="relative w-full max-w-[640px] h-[60px] sm:h-[64px] bg-gray-800/90 rounded-b-lg text-white flex justify-center items-center">
             {step === "ready" && (
               <button
                 onClick={(e) => {
@@ -229,10 +265,6 @@ export default function AssessmentRecorder({ onVideoUpload }: AssessmentRecorder
               </button>
             )}
           </div>
-        )}
-
-        {step === "initial" && (
-          <div className="relative w-full max-w-[640px] h-[60px] sm:h-[64px] bg-[#1e1e1e] rounded-b-lg"></div>
         )}
       </div>
     </div>
