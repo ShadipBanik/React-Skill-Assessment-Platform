@@ -38,11 +38,9 @@ export default function AssessmentPage() {
   const mainTimerRef = useRef<number | null>(null);
   const countdownTimerRef = useRef<number | null>(null);
   const submittedRef = useRef(false);
-
-  // NEW: ref to store videoFile to prevent losing it
   const videoFileRef = useRef<File | null>(null);
 
-  // Update videoFile ref whenever it changes
+  // Keep video file in ref to avoid loss
   useEffect(() => {
     videoFileRef.current = videoFile;
   }, [videoFile]);
@@ -56,7 +54,7 @@ export default function AssessmentPage() {
 
   // Auto step submit when timer runs out
   useEffect(() => {
-    if (!currentStep) return;
+    if (!currentStep || currentStep > TOTAL_STEPS) return;
 
     submittedRef.current = false;
     setShowCountdownModal(false);
@@ -76,8 +74,7 @@ export default function AssessmentPage() {
 
         setShowCountdownModal(false);
         const stepData = getCurrentStepData();
-        setTempStepData(stepData);
-        handleConfirmYes(true);
+        handleConfirmYes(true, stepData);
       }, 20 * 1000);
     }, duration * 1000);
 
@@ -85,6 +82,7 @@ export default function AssessmentPage() {
       console.log(`🗑 Clearing timers for Step ${currentStep}`);
       if (mainTimerRef.current) clearTimeout(mainTimerRef.current);
       if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+      setShowCountdownModal(false);
     };
   }, [currentStep]);
 
@@ -93,9 +91,9 @@ export default function AssessmentPage() {
     submittedRef.current = true;
 
     setShowCountdownModal(false);
+
     const stepData = getCurrentStepData();
-    setTempStepData(stepData);
-    handleConfirmYes(true);
+    handleConfirmYes(true, stepData);
   };
 
   const tabChange = () => {
@@ -128,14 +126,15 @@ export default function AssessmentPage() {
     setIsSubmitModalOpen(true);
   };
 
-  const handleConfirmYes = (auto = false) => {
-    const stepData = tempStepData || getCurrentStepData();
+  const handleConfirmYes = (auto = false, stepData?: Record<string, any>) => {
+    if (submittedRef.current && !auto) return;
+    submittedRef.current = true;
 
-    setShowCountdownModal(false);
+    const dataToSubmit = stepData || tempStepData || getCurrentStepData();
 
     setFormData((prev) => ({
       ...prev,
-      [`step${currentStep}`]: stepData,
+      [`step${currentStep}`]: dataToSubmit,
     }));
 
     setTempStepData(null);
@@ -146,15 +145,19 @@ export default function AssessmentPage() {
       setCurrentStep((prev) => prev + 1);
       tabChange();
     } else {
-      const finalData = {
-        ...formData,
-        [`step${currentStep}`]: stepData,
-        email: userEmail,
-      };
-      console.log("Submitting all steps data:", finalData);
-      localStorage.setItem(`assessmentDone:${userEmail}`, "true");
-      navigate("/assessment-success", { state: finalData });
+      submitFinal();
     }
+  };
+
+  const submitFinal = () => {
+    const finalData = {
+      ...formData,
+      [`step${currentStep}`]: getCurrentStepData(),
+      email: userEmail,
+    };
+    console.log("Submitting all steps data:", finalData);
+    localStorage.setItem(`assessmentDone:${userEmail}`, "true");
+    navigate("/assessment-success", { state: finalData });
   };
 
   return (
@@ -190,7 +193,7 @@ export default function AssessmentPage() {
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : currentStep < 4 ? (
+              ) : currentStep < TOTAL_STEPS ? (
                 "SUBMIT SECTION"
               ) : (
                 "FINAL SUBMIT"
@@ -218,7 +221,7 @@ export default function AssessmentPage() {
         isOpen={isSubmitModalOpen}
         title="Are you sure you want to submit?"
         message={
-          currentStep < 4
+          currentStep < TOTAL_STEPS
             ? "Once you submit this section, you cannot edit your answers."
             : "This is your final submission. You cannot edit afterwards."
         }
