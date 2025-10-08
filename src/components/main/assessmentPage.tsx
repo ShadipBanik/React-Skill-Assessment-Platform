@@ -36,6 +36,7 @@ export default function AssessmentPage() {
   }
 
   const submittedRef = useRef(false);
+  const countdownSubmittedRef = useRef(false); // ✅ fix flag
   const videoFileRef = useRef<File | null>(null);
 
   useEffect(() => {
@@ -48,11 +49,12 @@ export default function AssessmentPage() {
     }
   }, [navigate, userEmail]);
 
-  // NEW: time-based step timer
+  // NEW: time-based step timer with fix
   useEffect(() => {
     if (!currentStep) return;
 
     submittedRef.current = false;
+    countdownSubmittedRef.current = false; // reset flag
     setShowCountdownModal(false);
 
     const duration = STEP_DURATIONS[currentStep - 1];
@@ -77,6 +79,7 @@ export default function AssessmentPage() {
 
             if (submittedRef.current) return;
             submittedRef.current = true;
+            countdownSubmittedRef.current = true; // mark countdown submission
 
             setShowCountdownModal(false);
             const stepData = getCurrentStepData();
@@ -96,7 +99,7 @@ export default function AssessmentPage() {
   }, [currentStep]);
 
   const handleCountdownClose = () => {
-    if (submittedRef.current) return;
+    if (submittedRef.current && countdownSubmittedRef.current) return; // prevent double submission
     submittedRef.current = true;
 
     setShowCountdownModal(false);
