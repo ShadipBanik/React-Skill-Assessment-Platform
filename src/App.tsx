@@ -9,6 +9,7 @@ import AssessmentSuccessPage from "./components/main/pages/assessmentSuccess";
 import AssessmentSurvey from "./components/main/pages/assessmentSurvey";
 import AssessmentDonePage from "./components/main/pages/assessmentDone";
 import AssessmentRecorder from "./components/main/tabSections/videoQusetion";
+import AuthPage from "./components/home/auth/authPage";
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,8 @@ const App: React.FC = () => {
       <Route path="/assessment-survey" element={<AssessmentSurvey />} />
       <Route path="/assessment-done" element={<AssessmentDonePage />} />
       <Route path="/video" element={<AssessmentRecorder />} />
+      <Route path="/login" element={<AuthPage />} />
+
 
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
