@@ -1,6 +1,5 @@
 // src/pages/AuthPage.tsx
 import React, { useState } from "react";
-import PageHeader from "../../shared/pageHeader";
 import { Link } from "react-router-dom";
 
 const AuthPage: React.FC = () => {
@@ -45,12 +44,14 @@ const AuthPage: React.FC = () => {
         </header>
         <div className="min-h-screen flex items-center justify-center sm:min-h-0 sm:items-start sm:justify-start">
           <form
+            key={isRegister ? "register-form" : "login-form"} // re-render triggers animation
             onSubmit={handleSubmit}
-            className="space-y-6 r w-full p-4 md:p-8 lg:p-8 md:w-[640px] lg:w-[640px]  lg:ml-10 lg:mt-10 md:ml-10 md:mt-10"
+            className="space-y-6 w-full p-4 md:p-8 lg:p-8 md:w-[640px] lg:w-[640px] lg:ml-10 lg:mt-10 md:ml-10 md:mt-10 animate-fadeSlideLeft"
           >
             <h1 className="text-lg font-medium text-gray-800 mb-6">
               {isRegister ? "Create your account" : "Welcome back"}
             </h1>
+
             {isRegister && (
               <div>
                 <input
@@ -60,7 +61,7 @@ const AuthPage: React.FC = () => {
                   value={formData.fullName}
                   onChange={handleChange}
                   required
-                  className="w-full border text-sm bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg px-2 py-2 outline-none"
+                  className="w-full border text-sm bg-white border-gray-300 focus:border-[#6c5ce7] focus:ring-[#6c5ce7] rounded-lg px-2 py-2 outline-none"
                 />
               </div>
             )}
@@ -73,7 +74,7 @@ const AuthPage: React.FC = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full border text-sm bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg px-2 py-2 outline-none"
+                className="w-full border text-sm bg-white border-gray-300 focus:border-[#6c5ce7] focus:ring-[#6c5ce7] rounded-lg px-2 py-2 outline-none"
               />
             </div>
 
@@ -85,41 +86,48 @@ const AuthPage: React.FC = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full border text-sm bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg px-2 py-2 outline-none"
+                className="w-full border text-sm bg-white border-gray-300 focus:border-[#6c5ce7] focus:ring-[#6c5ce7] rounded-lg px-2 py-2 outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-auto bg-purple-600 px-5 text-white font-medium py-2 rounded-lg hover:bg-purple-700 transition"
+              className="w-auto bg-[#6c5ce7] px-5 text-white font-medium py-2 rounded-lg hover:bg-[#6c5ce7] transition"
             >
               {isRegister ? "Register" : "Login"}
             </button>
-            <p className="text-sm  text-gray-600 mt-2 ">
-              {isRegister
-                ? "Already have an account?"
-                : "Don’t have an account?"}{" "}
+
+            <p className="text-sm text-gray-600 mt-2">
+              {isRegister ? "Already have an account?" : "Don’t have an account?"}{" "}
               <button
                 type="button"
                 onClick={() => {
-                    setIsRegister(!isRegister)
-                    isRegister?setBanner('/images/login-banner-2.jpeg'):setBanner('/images/login-banner-1.webp')
+                  setIsRegister(!isRegister);
+                  isRegister
+                    ? setBanner("/images/login-banner-2.jpeg")
+                    : setBanner("/images/login-banner-1.webp");
                 }}
-                className="text-purple-600 font-medium hover:underline"
+                className="text-[#6c5ce7] font-medium hover:underline"
               >
                 {isRegister ? "Login here" : "Register here"}
               </button>
             </p>
           </form>
         </div>
+
       </div>
 
       {/* Right side illustration */}
       <div className="hidden lg:flex flex-1 items-center justify-center bg-gray-200">
         <img
-          src={banner}
+          key={isRegister ? "register" : "login"}
+          src={
+            isRegister
+              ? "/images/login-banner-1.webp"
+              : "/images/login-banner-2.jpeg"
+          }
           alt="Illustration"
-          className="max-w-md rounded-lg shadow-2xl"
+          className="max-w-md rounded-lg shadow-2xl transition-all duration-700 ease-out opacity-0 animate-fadeInUp"
         />
       </div>
     </div>

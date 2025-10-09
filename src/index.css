@@ -42,3 +42,34 @@ html, body, *, *::before, *::after {
     inset-inline-start: 20px;
     top: 20px;
 }
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out forwards; /* <-- forwards keeps final state */
+}
+
+@keyframes fadeSlideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px); /* start from left */
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0); /* end at normal */
+  }
+}
+
+.animate-fadeSlideLeft {
+  animation: fadeSlideLeft 0.6s ease-out forwards;
+}
+
