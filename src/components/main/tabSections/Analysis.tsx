@@ -47,9 +47,9 @@ export default function AnalysisTab() {
                 type="radio"
                 name="q3"
                 value={option}
-                className="accent-[#6c5ce7] w-4 h-4 focus:ring-[#6c5ce7] shrink-0"
+                className="peer accent-[#6c5ce7] w-4 h-4 focus:ring-[#6c5ce7] shrink-0"
               />
-              <span>{option}</span>
+              <span className="peer-checked:text-pink-500 transition-colors">{option}</span>
             </label>
           ))}
         </div>
@@ -79,9 +79,9 @@ export default function AnalysisTab() {
                 type="radio"
                 name="q4"
                 value={option}
-                className="accent-[#6c5ce7] w-4 h-4 focus:ring-[#6c5ce7] shrink-0"
+                className="peer accent-[#6c5ce7] w-4 h-4 focus:ring-[#6c5ce7] shrink-0"
               />
-              <span>{option}</span>
+              <span className="peer-checked:text-pink-500 transition-colors">{option}</span>
             </label>
           ))}
         </div>

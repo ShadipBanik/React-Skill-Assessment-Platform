@@ -28,10 +28,10 @@ const Home: React.FC = () => {
           </li>
           <li>Don’t open the test in more than one tab at the same time.</li>
           <li>
-            This assessment contains Excel questions accessed via Google Sheets.
+            This assessment contains Excel questions accessed via Google Sheets. &nbsp; 
             <a href="#" className="text-blue-600 underline">
-              Click here
-            </a>{" "}
+              Click here 
+            </a>&nbsp;
             to check compatibility.
           </li>
           <li>
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
           </li>
           <li>
             If you face technical issues, refresh the browser. Answers will be
-            saved. For persistent issues, contact
+            saved. For persistent issues, contact &nbsp; 
             <a
               href="mailto:support@canditech.io"
               className="text-blue-600 underline"

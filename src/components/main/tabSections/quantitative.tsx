@@ -6,71 +6,70 @@ export default function QuantitativeTab() {
       </h2>
 
       {/* Question 1 */}
-      <div className="mb-10 sm:mb-12">
-        <h3 className="flex flex-col sm:flex-row items-start sm:items-center text-sm sm:text-base md:text-lg font-medium text-gray-800 mb-3">
-          <span className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-[#6c5ce7] text-white text-xs sm:text-sm font-bold mr-2 mb-2 sm:mb-0 shrink-0">
-            1
-          </span>
-          <span>
+      <div>
+        <h2 className="flex font-medium gap-3 mb-4 text-base md:text-lg sm:text-sm items-start">
+          <div className="flex items-center justify-center w-7 h-7 rounded-full border-2 text-base font-normal bg-[#6c5ce7] text-white border-[#6c5ce7] shrink-0 ">
+            3
+          </div>
+          <span className="text-gray-800 leading-snug">
             Your CVR (Conversion Rate, when conversion refers to users who
             download the app from the app store) has increased by 5 times. Which
             of the following statements about your CPI (Cost per Install) is
             correct?
           </span>
-        </h3>
-
-        <div className="space-y-3 sm:space-y-2 pb-10 sm:pb-14 pl-0 sm:pl-6 md:pl-10">
+        </h2>
+        <div className="space-y-2 sm:space-y-3 text-gray-500 pb-14 md:pl-10">
           {[
             "It should have decreased by 5 times.",
             "It should have increased by 5 times.",
             "It should have stayed the same, because there is no correlation between CPI and CVR.",
             "There is not enough information to determine what should have happened to the CPI.",
-          ].map((option, i) => (
+          ].map((option, idx) => (
             <label
-              key={i}
-              className="flex items-start sm:items-center gap-2 cursor-pointer"
+              key={idx}
+              className="flex items-center space-x-2 text-[14px] sm:text-[15px]"
             >
               <input
                 type="radio"
                 name="q1"
                 value={option}
-                className="mt-1 sm:mt-0 w-4 h-4 accent-[#6c5ce7] focus:ring-[#6c5ce7] shrink-0"
+                className="peer accent-[#6c5ce7] w-4 h-4 focus:ring-[#6c5ce7] shrink-0"
               />
-              <span className="text-gray-700 text-sm sm:text-base leading-snug">
+              <span className="peer-checked:text-pink-500 transition-colors">
                 {option}
               </span>
             </label>
           ))}
         </div>
       </div>
-
       {/* Question 2 */}
-      <div className="mb-10 sm:mb-12">
-        <h3 className="flex flex-col sm:flex-row items-start sm:items-center text-sm sm:text-base md:text-lg font-medium text-gray-800 mb-3">
-          <span className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-[#6c5ce7] text-white text-xs sm:text-sm font-bold mr-2 mb-2 sm:mb-0 shrink-0">
+      <div>
+        <h2 className="flex flex-col sm:flex-row sm:items-center font-medium gap-3 mb-4 text-base md:text-lg sm:text-sm">
+          <div className="flex items-center justify-center w-7 h-7 rounded-full border-2 text-base font-normal bg-[#6c5ce7] text-white border-[#6c5ce7] shrink-0">
             2
-          </span>
-          <span>
+          </div>
+          <span className="mt-2 sm:mt-0">
             In July, you got 500 installs with a total cost of $2,000. The ARPU
             (Average Revenue Per User) in July was $3. What is your ROAS (Return
             on Ad Spend) in July?
           </span>
-        </h3>
-
+        </h2>
         <p className="text-gray-600 text-xs sm:text-sm md:text-base mb-3 pl-0 sm:pl-6 md:pl-10 italic">
           Note that ROAS = Revenue / Cost
         </p>
-
-        <div className="space-y-3 sm:space-y-2 pb-10 sm:pb-14 pl-0 sm:pl-6 md:pl-10">
-          {["25%", "175%", "75%", "125%"].map((option, i) => (
-            <label key={i} className="flex items-center gap-2 cursor-pointer">
+        <div className="space-y-2 sm:space-y-3 text-gray-500 pb-14 md:pl-10">
+          {["25%", "175%", "75%", "125%"].map((option, idx) => (
+            <label
+              key={idx}
+              className="flex items-center space-x-2 text-[14px] sm:text-[15px]"
+            >
               <input
                 type="radio"
                 name="q2"
                 value={option}
-                className="w-4 h-4 accent-[#6c5ce7] focus:ring-[#6c5ce7] shrink-0"
+                className="peer accent-[#6c5ce7] w-4 h-4 focus:ring-[#6c5ce7] shrink-0"
               />
-              <span className="text-gray-700 text-sm sm:text-base">
+              <span className="peer-checked:text-pink-500 transition-colors">
                 {option}
               </span>
             </label>
@@ -79,28 +78,30 @@ export default function QuantitativeTab() {
       </div>
 
       {/* Question 3 */}
-      <div className="mb-10 sm:mb-12">
-        <h3 className="flex flex-col sm:flex-row items-start sm:items-center text-sm sm:text-base md:text-lg font-medium text-gray-800 mb-3">
-          <span className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-[#6c5ce7] text-white text-xs sm:text-sm font-bold mr-2 mb-2 sm:mb-0 shrink-0">
-            3
-          </span>
-          <span>
+      <div>
+        <h2 className="flex flex-col sm:flex-row sm:items-center font-medium gap-3 mb-4 text-base md:text-lg sm:text-sm">
+          <div className="flex items-center justify-center w-7 h-7 rounded-full border-2 text-base font-normal bg-[#6c5ce7] text-white border-[#6c5ce7] shrink-0">
+            2
+          </div>
+          <span className="mt-2 sm:mt-0">
             In August, you got 1,000 installs with a deposit rate of 3%. The
             ARPU (Average Revenue per user) in August was $3. What is the ARPPU
             (Average Revenue Per Paying User) in August?
           </span>
-        </h3>
-
-        <div className="space-y-3 sm:space-y-2 pl-0 sm:pl-6 md:pl-10">
-          {["$1", "$10", "$1,000", "$100"].map((option, i) => (
-            <label key={i} className="flex items-center gap-2 cursor-pointer">
+        </h2>
+        <div className="space-y-2 sm:space-y-3 text-gray-500 pb-14 md:pl-10">
+          {["$1", "$10", "$1,000", "$100"].map((option, idx) => (
+            <label
+              key={idx}
+              className="flex items-center space-x-2 text-[14px] sm:text-[15px]"
+            >
               <input
                 type="radio"
                 name="q3"
                 value={option}
-                className="w-4 h-4 accent-[#6c5ce7] focus:ring-[#6c5ce7] shrink-0"
+                className="peer accent-[#6c5ce7] w-4 h-4 focus:ring-[#6c5ce7] shrink-0"
               />
-              <span className="text-gray-700 text-sm sm:text-base">
+              <span className="peer-checked:text-pink-500 transition-colors">
                 {option}
               </span>
             </label>

@@ -25,13 +25,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.6)]">
       <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative text-center">
         {/* Title */}
-        {title && <h2 className="text-lg font-semibold mb-4">{title}</h2>}
+        {title && <h1 className="text-xl font-medium mb-4">{title}</h1>}
 
         {/* Message */}
-        <p className="mb-6">{message}</p>
+        <p className="mb-2">{message}</p>
 
         {/* Actions (from parent) */}
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-2">
           {actions ? (
             actions
           ) : (
