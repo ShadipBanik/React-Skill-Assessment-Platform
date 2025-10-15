@@ -9,7 +9,8 @@ import AssessmentSuccessPage from "./components/main/pages/assessmentSuccess";
 import AssessmentSurvey from "./components/main/pages/assessmentSurvey";
 import AssessmentDonePage from "./components/main/pages/assessmentDone";
 import AssessmentRecorder from "./components/main/tabSections/videoQusetion";
-import AuthPage from "./components/home/auth/authPage";
+import LoginPage from "./components/home/auth/login";
+import RegisterPage from "./components/home/auth/register";
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -26,26 +27,20 @@ const App: React.FC = () => {
   }
 
   return (
-  <Router basename="/">
-    <Routes>
-      <Route path="/" element={<Home/>} />
-      <Route path="/assessment" element={<AssessmentPage />} />
-      <Route path="/assessment-success" element={<AssessmentSuccessPage />} />
-      <Route path="/assessment-survey" element={<AssessmentSurvey />} />
-      <Route path="/assessment-done" element={<AssessmentDonePage />} />
-      <Route path="/video" element={<AssessmentRecorder />} />
-      <Route path="/login" element={<AuthPage />} />
-
-
-      <Route path="/terms" element={<Terms />} />
-      <Route path="/privacy" element={<PrivacyPolicy />} />
-
-
-
-    </Routes>
-  </Router>
+    <Router basename="/">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/assessment" element={<AssessmentPage />} />
+        <Route path="/assessment-success" element={<AssessmentSuccessPage />} />
+        <Route path="/assessment-survey" element={<AssessmentSurvey />} />
+        <Route path="/assessment-done" element={<AssessmentDonePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+      </Routes>
+    </Router>
   );
 };
 
 export default App;
-

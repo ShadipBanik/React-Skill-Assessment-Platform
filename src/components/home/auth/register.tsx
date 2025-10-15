@@ -2,27 +2,20 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const AuthPage: React.FC = () => {
-  const [isRegister, setIsRegister] = useState(true);
-  const [banner, setBanner] = useState("/images/login-banner-1.webp");
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-  });
+const RegisterPage: React.FC = () => {
+const [registerData, setRegisterData] = useState({ fullName: "", email: "", password: "" });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+    setRegisterData({ ...registerData, [name]: value });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isRegister) {
-      console.log("Registering:", formData);
-    } else {
-      console.log("Logging in:", formData);
-    }
-  };
+};
+
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+    console.log("Registering:", registerData);
+    setRegisterData({ fullName: "", email: "", password: "" });
+};
 
   return (
     <div className="min-h-screen flex bg-gray-100">
@@ -44,36 +37,35 @@ const AuthPage: React.FC = () => {
         </header>
         <div className="min-h-screen flex items-center justify-center sm:min-h-0 sm:items-start sm:justify-start">
           <form
-            key={isRegister ? "register-form" : "login-form"} // re-render triggers animation
+            key="register-form" // re-render triggers animation
             onSubmit={handleSubmit}
             className="space-y-6 w-full p-4 md:p-8 lg:p-8 md:w-[640px] lg:w-[640px] lg:ml-10 lg:mt-10 md:ml-10 md:mt-10 animate-fadeSlideLeft"
           >
             <h1 className="text-lg font-medium text-gray-800 mb-6">
-              {isRegister ? "Create your account" : "Welcome back"}
+               Create your account
             </h1>
 
-            {isRegister && (
               <div>
                 <input
                   type="text"
                   name="fullName"
                   placeholder="Full name*"
-                  value={formData.fullName}
+                  value={registerData.fullName }
                   onChange={handleChange}
                   required
                   className="w-full border text-sm bg-white border-gray-300 focus:border-[#6c5ce7] focus:ring-[#6c5ce7] rounded-lg px-2 py-2 outline-none"
                 />
               </div>
-            )}
 
             <div>
               <input
                 type="email"
                 name="email"
                 placeholder="Email*"
-                value={formData.email}
+                value={registerData.email}
                 onChange={handleChange}
                 required
+                autoComplete="email"
                 className="w-full border text-sm bg-white border-gray-300 focus:border-[#6c5ce7] focus:ring-[#6c5ce7] rounded-lg px-2 py-2 outline-none"
               />
             </div>
@@ -83,9 +75,10 @@ const AuthPage: React.FC = () => {
                 type="password"
                 name="password"
                 placeholder="Password*"
-                value={formData.password}
+                value={registerData.password}
                 onChange={handleChange}
                 required
+                autoComplete="new-password"
                 className="w-full border text-sm bg-white border-gray-300 focus:border-[#6c5ce7] focus:ring-[#6c5ce7] rounded-lg px-2 py-2 outline-none"
               />
             </div>
@@ -94,23 +87,17 @@ const AuthPage: React.FC = () => {
               type="submit"
               className="w-auto bg-[#6c5ce7] px-5 text-white font-medium py-2 rounded-lg hover:bg-[#6c5ce7] transition"
             >
-              {isRegister ? "Register" : "Login"}
+              Register
             </button>
 
             <p className="text-sm text-gray-600 mt-2">
-              {isRegister ? "Already have an account?" : "Don’t have an account?"}{" "}
-              <button
+              Already have an account? &nbsp;
+              <Link to={'/login'}
                 type="button"
-                onClick={() => {
-                  setIsRegister(!isRegister);
-                  isRegister
-                    ? setBanner("/images/login-banner-2.jpeg")
-                    : setBanner("/images/login-banner-1.webp");
-                }}
                 className="text-[#6c5ce7] font-medium hover:underline"
               >
-                {isRegister ? "Login here" : "Register here"}
-              </button>
+                 Login here
+              </Link>
             </p>
           </form>
         </div>
@@ -120,12 +107,8 @@ const AuthPage: React.FC = () => {
       {/* Right side illustration */}
       <div className="hidden lg:flex flex-1 items-center justify-center bg-gray-200">
         <img
-          key={isRegister ? "register" : "login"}
-          src={
-            isRegister
-              ? "/images/login-banner-1.webp"
-              : "/images/login-banner-2.jpeg"
-          }
+          key= "register"
+          src="/images/login-banner-1.webp"
           alt="Illustration"
           className="max-w-md rounded-lg shadow-2xl transition-all duration-700 ease-out opacity-0 animate-fadeInUp"
         />
@@ -134,4 +117,4 @@ const AuthPage: React.FC = () => {
   );
 };
 
-export default AuthPage;
+export default RegisterPage;
