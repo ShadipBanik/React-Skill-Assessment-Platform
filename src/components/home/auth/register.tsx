@@ -49,14 +49,7 @@ const RegisterPage: React.FC = () => {
       <div className="flex-1 flex flex-col">
         <header className="w-full px-4 py-4 md:px-8 lg:px-8">
           <Link to={"/"}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 130 22"
-              className="app-logo prevent-events"
-            >
-              {/* SVG path omitted for brevity */}
-            </svg>
+             <img src="/images/logo.svg" className="app-logo prevent-events"></img>
           </Link>
         </header>
 
