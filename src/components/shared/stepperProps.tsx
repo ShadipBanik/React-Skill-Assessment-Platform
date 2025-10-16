@@ -13,7 +13,7 @@ const Stepper: React.FC<StepperProps> = ({ currentStep }) => {
   ];
 
   return (
-    <div className="w-full flex md:flex-col items-center">
+    <div className="w-full flex md:flex-col items-center ">
       <div className="flex w-[80%] md:w-full items-center  p-2 sm:p-4 overflow-x-auto">
         {steps.map((step, index) => (
           <div key={step.id} className="flex items-center flex-1 min-w-[50px] sm:min-w-0">
@@ -29,7 +29,7 @@ const Stepper: React.FC<StepperProps> = ({ currentStep }) => {
               >
                 {step.id}
               </div>
-              <span className="hidden sm:inline font-normal text-gray-800 whitespace-nowrap">
+              <span className="hidden lg:inline font-normal text-gray-800 whitespace-nowrap">
                 {step.label}
               </span>
             </div>

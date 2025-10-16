@@ -15,7 +15,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.3",
-    "react-timer-hook": "^4.0.5"
+    "react-timer-hook": "^4.0.5",
+    "react-transition-group": "^4.4.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
@@ -24,6 +25,7 @@
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@types/react-router-dom": "^5.3.3",
+    "@types/react-transition-group": "^4.4.12",
     "@vitejs/plugin-react": "^5.0.3",
     "connect-history-api-fallback": "^2.0.0",
     "eslint": "^9.36.0",

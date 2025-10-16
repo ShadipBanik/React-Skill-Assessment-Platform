@@ -209,11 +209,6 @@ const Terms: React.FC = () => {
                   You may not assign or transfer your rights or obligations
                   under these Terms without our prior written consent.
                 </li>
-                <li>
-                  These Terms shall be governed by and construed in accordance
-                  with the laws of the State of Israel, and the competent courts
-                  of Tel Aviv shall have exclusive jurisdiction.
-                </li>
               </ol>
             </li>
           </ol>

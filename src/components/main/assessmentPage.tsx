@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Header from "./header/header";
 import ConfirmModal from "../shared/ConfirmModal";
 import AssessmentRecorder from "./tabSections/videoQusetion";
@@ -10,6 +10,7 @@ import AnalysisTab from "./tabSections/Analysis";
 import CountdownModal from "../shared/countDownnModal";
 
 export default function AssessmentPage() {
+  const stepRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -232,32 +233,32 @@ export default function AssessmentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-[#fafafa] ">
       <Header currentStep={currentStep} duration={STEP_DURATIONS[currentStep - 1]} key={currentStep} />
 
       <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
-        <form
-          ref={formRef}
-          className="bg-white shadow-md rounded-2xl p-4 sm:p-6 md:p-8 mt-[120px] space-y-8"
-          onSubmit={handleStepSubmit}
-        >
-          {currentStep === 1 && <AnalysisTab />}
-          {currentStep === 2 && <MarketingPlan />}
-          {currentStep === 3 && <QuantitativeTab />}
-          {currentStep === 4 && <AssessmentRecorder onVideoUpload={async (file) => setVideoFile(file)} />}
+        <form ref={formRef} onSubmit={handleStepSubmit} className="bg-white shadow-md rounded-2xl p-6 mt-[120px] space-y-8">
+          <div className="w-full overflow-hidden">
+            <TransitionGroup component={null}>
+              <CSSTransition
+                key={currentStep}
+                nodeRef={stepRefs[currentStep - 1]}
+                timeout={1000}
+                classNames="step"
+              >
+                <div ref={stepRefs[currentStep - 1]} className="w-full">
+                  {currentStep === 1 && <AnalysisTab />}
+                  {currentStep === 2 && <MarketingPlan />}
+                  {currentStep === 3 && <QuantitativeTab />}
+                  {currentStep === 4 && <AssessmentRecorder onVideoUpload={ async(file) => setVideoFile(file)} />}
+                </div>
+              </CSSTransition>
+            </TransitionGroup>
+          </div>
 
           <div className="flex justify-center mt-6">
-            <button
-              type="submit"
-              className="bg-green-500 flex font-bold items-center justify-center gap-2 text-white rounded disabled:opacity-70 w-[221px] h-[44px]"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : currentStep < 4 ? (
-                "SUBMIT SECTION"
-              ) : (
-                "FINAL SUBMIT"
-              )}
+            <button type="submit" className="bg-green-500 flex font-bold items-center justify-center gap-2 text-white rounded w-[221px] h-[44px]">
+              {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : currentStep < 4 ? "SUBMIT SECTION" : "FINAL SUBMIT"}
             </button>
           </div>
         </form>
