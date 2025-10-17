@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import ConfirmModal from "../../shared/ConfirmModal";
 
 interface AssessmentRecorderProps {
   onVideoUpload?: (file: File) => Promise<void>; // async so we can track progress
@@ -13,6 +14,7 @@ export default function AssessmentRecorder({
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(120);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [deviceError, setDeviceError] = useState<boolean>(false); 
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -74,6 +76,9 @@ export default function AssessmentRecorder({
       }, 1000);
     } catch (err) {
       console.error("startRecording error:", err);
+      if (err) {
+        setDeviceError(true);
+      }
     }
   };
 
@@ -304,6 +309,11 @@ export default function AssessmentRecorder({
           )}
         </div>
       </div>
+      <ConfirmModal
+        isOpen={deviceError}
+        onClose={() => setDeviceError(false)}
+        message="Device not found. Please make sure the camera and microphone are connected."
+      />
     </div>
   );
 }

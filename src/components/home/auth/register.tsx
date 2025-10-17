@@ -6,7 +6,7 @@ const RegisterPage: React.FC = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [isRestricted, setIsRestricted] = useState(false);
 
-  const restrictedCountries = ["BD", "IN", "PK"]; // Bangladesh, India, Pakistan (ISO codes)
+  const restrictedCountries = ["BD", "IN", "PK"]; 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

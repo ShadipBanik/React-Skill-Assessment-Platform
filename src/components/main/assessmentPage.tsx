@@ -10,7 +10,12 @@ import AnalysisTab from "./tabSections/Analysis";
 import CountdownModal from "../shared/countDownnModal";
 
 export default function AssessmentPage() {
-  const stepRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
+  const stepRefs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+  ];
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -18,13 +23,15 @@ export default function AssessmentPage() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Record<string, any>>({});
-  const [tempStepData, setTempStepData] = useState<Record<string, any> | null>(null);
+  const [tempStepData, setTempStepData] = useState<Record<string, any> | null>(
+    null
+  );
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [showCountdownModal, setShowCountdownModal] = useState(false);
 
   const TOTAL_STEPS = 4;
-  const STEP_DURATIONS = [40, 30, 40, 40]; // seconds per step
+  const STEP_DURATIONS = [40, 30, 40, 80]; // seconds per step
 
   // timers stored as window timer IDs (number)
   const mainTimerRef = useRef<number | null>(null);
@@ -104,7 +111,9 @@ export default function AssessmentPage() {
       const remaining = stepEnd - Date.now();
       if (remaining <= 0) {
         // step time finished exactly now
-        console.log(`⏳ Step ${stepAtStart} time limit reached — opening countdown`);
+        console.log(
+          `⏳ Step ${stepAtStart} time limit reached — opening countdown`
+        );
         setShowCountdownModal(true);
 
         // start countdown (20s) with same token guard
@@ -112,13 +121,18 @@ export default function AssessmentPage() {
         const countdownCheck = () => {
           if (token !== stepTokenRef.current) return;
           if (Date.now() >= countdownEnd) {
-            console.log(`✅ Step ${stepAtStart} auto-submitted after countdown`);
+            console.log(
+              `✅ Step ${stepAtStart} auto-submitted after countdown`
+            );
             // finalise this step (pass stepAtStart and token)
             finishStep(stepAtStart, token);
           } else {
             // schedule next small-check (shorter of remaining or 500ms)
             const nextDelay = Math.min(500, countdownEnd - Date.now());
-            countdownTimerRef.current = window.setTimeout(countdownCheck, nextDelay) as unknown as number;
+            countdownTimerRef.current = window.setTimeout(
+              countdownCheck,
+              nextDelay
+            ) as unknown as number;
           }
         };
 
@@ -127,7 +141,10 @@ export default function AssessmentPage() {
       } else {
         // schedule next check (shorter of remaining or 500ms)
         const nextDelay = Math.min(500, remaining);
-        mainTimerRef.current = window.setTimeout(stepCheck, nextDelay) as unknown as number;
+        mainTimerRef.current = window.setTimeout(
+          stepCheck,
+          nextDelay
+        ) as unknown as number;
       }
     };
 
@@ -198,14 +215,19 @@ export default function AssessmentPage() {
     stepDataArg?: Record<string, any>
   ) => {
     // pick explicit step index if provided (auto path), otherwise use currentStep
-    const stepIndexToUse = typeof stepIndexArg === "number" ? stepIndexArg : currentStep;
-    const stepData = stepDataArg ?? tempStepData ?? getCurrentStepDataFor(stepIndexToUse);
+    const stepIndexToUse =
+      typeof stepIndexArg === "number" ? stepIndexArg : currentStep;
+    const stepData =
+      stepDataArg ?? tempStepData ?? getCurrentStepDataFor(stepIndexToUse);
 
     // invalidate any running timers immediately to avoid races
     clearAllTimersAndInvalidate();
 
     // update the formData (both state and ref synchronously)
-    const newFormData = { ...formDataRef.current, [`step${stepIndexToUse}`]: stepData };
+    const newFormData = {
+      ...formDataRef.current,
+      [`step${stepIndexToUse}`]: stepData,
+    };
     setFormData(newFormData);
     formDataRef.current = newFormData;
 
@@ -234,10 +256,18 @@ export default function AssessmentPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] ">
-      <Header currentStep={currentStep} duration={STEP_DURATIONS[currentStep - 1]} key={currentStep} />
+      <Header
+        currentStep={currentStep}
+        duration={STEP_DURATIONS[currentStep - 1]}
+        key={currentStep}
+      />
 
       <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
-        <form ref={formRef} onSubmit={handleStepSubmit} className="bg-white shadow-md rounded-2xl p-6 mt-[120px] space-y-8">
+        <form
+          ref={formRef}
+          onSubmit={handleStepSubmit}
+          className="bg-white shadow-md rounded-2xl p-6 mt-[120px] space-y-8"
+        >
           <div className="w-full overflow-hidden">
             <TransitionGroup component={null}>
               <CSSTransition
@@ -250,15 +280,28 @@ export default function AssessmentPage() {
                   {currentStep === 1 && <AnalysisTab />}
                   {currentStep === 2 && <MarketingPlan />}
                   {currentStep === 3 && <QuantitativeTab />}
-                  {currentStep === 4 && <AssessmentRecorder onVideoUpload={ async(file) => setVideoFile(file)} />}
+                  {currentStep === 4 && (
+                    <AssessmentRecorder
+                      onVideoUpload={async (file) => setVideoFile(file)}
+                    />
+                  )}
                 </div>
               </CSSTransition>
             </TransitionGroup>
           </div>
 
           <div className="flex justify-center mt-6">
-            <button type="submit" className="bg-green-500 flex font-bold items-center justify-center gap-2 text-white rounded w-[221px] h-[44px]">
-              {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : currentStep < 4 ? "SUBMIT SECTION" : "FINAL SUBMIT"}
+            <button
+              type="submit"
+              className="bg-green-500 flex font-bold items-center justify-center gap-2 text-white rounded w-[221px] h-[44px]"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : currentStep < 4 ? (
+                "SUBMIT SECTION"
+              ) : (
+                "FINAL SUBMIT"
+              )}
             </button>
           </div>
         </form>
@@ -272,18 +315,35 @@ export default function AssessmentPage() {
         confirmText="Agree & Continue"
       />
 
-      <CountdownModal isOpen={showCountdownModal} duration={20} onClose={handleCountdownClose} />
+      <CountdownModal
+        isOpen={showCountdownModal}
+        duration={20}
+        onClose={handleCountdownClose}
+      />
 
       <ConfirmModal
         isOpen={isSubmitModalOpen}
         title="Are you sure you want to submit?"
-        message={currentStep < 4 ? "Once you submit this section, you cannot edit your answers." : "This is your final submission. You cannot edit afterwards."}
+        message={
+          currentStep < 4
+            ? "Once you submit this section, you cannot edit your answers."
+            : "This is your final submission. You cannot edit afterwards."
+        }
         actions={
           <>
-            <button onClick={() => { setIsSubmitModalOpen(false); setLoading(false); }} className="px-4 py-2 text-red-600 hover:underline">
+            <button
+              onClick={() => {
+                setIsSubmitModalOpen(false);
+                setLoading(false);
+              }}
+              className="px-4 py-2 text-red-600 hover:underline"
+            >
               No
             </button>
-            <button onClick={() => handleConfirmYes(false)} className="px-4 py-2 text-green-700">
+            <button
+              onClick={() => handleConfirmYes(false)}
+              className="px-4 py-2 text-green-700"
+            >
               Yes
             </button>
           </>
