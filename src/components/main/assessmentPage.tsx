@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Header from "./header/header";
 import ConfirmModal from "../shared/ConfirmModal";
-import AssessmentRecorder from "./tabSections/videoQusetion";
 import QuantitativeTab from "./tabSections/quantitative";
 import MarketingPlan from "./tabSections/marketingPlan";
 import AnalysisTab from "./tabSections/Analysis";
 import CountdownModal from "../shared/countDownnModal";
+import AssessmentRecorder from "./tabSections/videoSection/videoQuestion";
 
 export default function AssessmentPage() {
   const stepRefs = [
