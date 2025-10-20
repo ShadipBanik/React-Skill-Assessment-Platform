@@ -10,6 +10,7 @@ import AssessmentSurvey from "./components/main/pages/assessmentSurvey";
 import AssessmentDonePage from "./components/main/pages/assessmentDone";
 import LoginPage from "./components/home/auth/login";
 import RegisterPage from "./components/home/auth/register";
+import NotFound from "./components/home/notFound/notFound";
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -32,11 +33,12 @@ const App: React.FC = () => {
         <Route path="/assessment" element={<AssessmentPage />} />
         <Route path="/assessment-success" element={<AssessmentSuccessPage />} />
         <Route path="/assessment-survey" element={<AssessmentSurvey />} />
-        <Route path="/assessment-done" element={<AssessmentDonePage />} />        
+        <Route path="/assessment-done" element={<AssessmentDonePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

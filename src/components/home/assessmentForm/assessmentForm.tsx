@@ -100,7 +100,7 @@ const AssessmentForm: React.FC = () => {
 
   // Utility classes for error/normal inputs
   const inputClasses = (field: keyof FormErrors) =>
-    `peer block w-full bg-transparent pt-5 pb-2 px-3 text-sm placeholder-transparent 
+    `peer block w-full bg-transparent pt-5 pb-2  text-sm placeholder-transparent 
      focus:outline-none border-0 border-b 
      ${
        errors[field]
@@ -109,7 +109,7 @@ const AssessmentForm: React.FC = () => {
      }`;
 
   const labelClasses = (field: keyof FormErrors) =>
-    `absolute left-3 top-1 text-sm transition-all 
+    `absolute  top-1 text-sm transition-all 
      peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
      peer-focus:top-1 peer-focus:text-sm
      ${

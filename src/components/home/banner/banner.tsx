@@ -63,10 +63,10 @@ const Banner: React.FC = () => {
 
       {/* Banner Text */}
       <div className="relative z-10 px-4 w-full md:w-4/6 mx-auto">
-        <h2 className="text-lg sm:text-2xl md:text-2xl font-semibold">
+        <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold">
           Hey Candidate,
         </h2>
-        <p className="mt-4 text-lg sm:text-lg md:text-lg leading-relaxed">
+        <p className="mt-4 text-lg sm:text-lg md:text-xl leading-relaxed">
           Thank you for your interest in Drvpatchhub! We’re excited to invite
           you to take the Digital Marketing Associate Test. <br />
           The test will take up to 75 minutes. <br />
